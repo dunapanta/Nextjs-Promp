@@ -6,9 +6,10 @@ import Image from "next/image";
 import { signIn, signOut, useSession, getProviders } from "next-auth/react";
 
 const Nav = () => {
-  const isUserSignedIn = true;
+  const isUserLoggedIn = true;
 
   const [providers, setProviders] = useState(null);
+  const [toggleDropdown, setToggleDropdown] = useState(true);
 
   useEffect(() => {
     const setProviders = async () => {
@@ -33,7 +34,7 @@ const Nav = () => {
       </Link>
       {/* Desktop Navigation */}
       <div className="sm:flex hidden">
-        {isUserSignedIn ? (
+        {isUserLoggedIn ? (
           <div className="flex gap-3 md:gap-5">
             <Link href="/create-prompt" className="black-btn">
               Create Post
@@ -50,6 +51,47 @@ const Nav = () => {
                 alt="profile"
               />
             </Link>
+          </div>
+        ) : (
+          <>
+            {providers &&
+              Object.values(providers).map((provider) => (
+                <button
+                  type="button"
+                  key={provider.name}
+                  onClick={() => signIn(provider.id)}
+                  className="black_btn"
+                >
+                  Sign in with {provider.name}
+                </button>
+              ))}
+          </>
+        )}
+      </div>
+
+      {/* Mobile Navigation */}
+      <div className="sm:hidden flex relative">
+        {isUserLoggedIn ? (
+          <div className="flex">
+            <Image
+              src="/assets/images/logo.svg"
+              onClick={() => setToggleDropdown((prev) => !prev)}
+              width={37}
+              height={37}
+              className="rounded-full"
+              alt="profile"
+            />
+            {toggleDropdown && (
+              <div className="dropdown">
+                <Link
+                  href="/profile"
+                  className="dropdown_link"
+                  onClick={() => setToggleDropdown(false)}
+                >
+                  My Profile
+                </Link>
+              </div>
+            )}
           </div>
         ) : (
           <>
